@@ -186,6 +186,9 @@ function constructfund(;nsteps=1050)
     setparameter(m, :impactdeathmorbidity, :dead_other, zeros(nsteps+1, 16)) # This is a connection point for other impact components
     setparameter(m, :impactdeathmorbidity, :sick_other, zeros(nsteps+1, 16)) # This is a connection point for other impact components
 
+    morttempeffect = readdlm("../nasdata/morttempeffect.csv", ',')
+    setparameter(m, :impactdeathmorbidity, :morttempeffect, MvNormal(squeeze(morttempeffect[1,:], 1), morttempeffect[2:4,:]))
+
     connectparameter(m, :impactwaterresources, :population, :population, :population)
     connectparameter(m, :impactwaterresources, :income, :socioeconomic, :income)
     connectparameter(m, :impactwaterresources, :temp, :climateregional, :temp)

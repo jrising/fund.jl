@@ -22,8 +22,7 @@
     d2dc = Parameter(index=[regions])
     d2dr = Parameter(index=[regions])
 
-    morttempeffect_linear = Parameter()
-    morttempeffect_quad = Parameter()
+    morttempeffect::Vector{Float64} = Parameter()
 
     dengue = Parameter(index=[time,regions])
     schisto = Parameter(index=[time,regions])
@@ -56,7 +55,7 @@ function timestep(s::impactdeathmorbidity, t::Int)
     if t>1
         for r in d.regions
             if r == 1 # USA
-                v.dead[t, r] = (p.morttempeffect_linear * p.temp[t, r] + p.morttempeffect_quad * p.temp[t, r]^2) * p.population[t, r] * 1e6 / 100000.
+                v.dead[t, r] = (p.morttempeffect[1] * p.temp[t, r] + p.morttempeffect[2] * p.temp[t, r]^2 + p.morttempeffect[3] * p.temp[t, r]^2) * p.population[t, r] * 1e6 / 100000.
             else
                 v.dead[t, r] = p.dengue[t, r] + p.schisto[t, r] + p.malaria[t, r] + p.cardheat[t, r] + p.cardcold[t, r] + p.resp[t, r] + p.diadead[t, r] + p.hurrdead[t, r] + p.extratropicalstormsdead[t, r] + p.dead_other[t,r]
             end
