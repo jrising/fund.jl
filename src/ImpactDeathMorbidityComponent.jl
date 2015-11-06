@@ -56,7 +56,7 @@ function timestep(s::impactdeathmorbidity, t::Int)
     if t>1
         for r in d.regions
             if r == 1 # USA
-                morttemp = (p.morttempeffect[1] * p.temp[t, r] + p.morttempeffect[2] * p.temp[t, r]^2 + p.morttempeffect[3] * p.temp[t, r]^2) * p.population[t, r] * 1e6 / 100000.
+                morttemp = (p.morttempeffect[1] * p.temp[t, r] + p.morttempeffect[2] * p.temp[t, r]^2 + p.morttempeffect[3] * p.temp[t, r]^3) * p.population[t, r] * 1e6 / 100000.
                 if t == 2
                     # Calculate the different in initial death rates
                     original = p.dengue[t, r] + p.schisto[t, r] + p.malaria[t, r] + p.cardheat[t, r] + p.cardcold[t, r] + p.resp[t, r] + p.diadead[t, r] + p.hurrdead[t, r] + p.extratropicalstormsdead[t, r] + p.dead_other[t,r]
