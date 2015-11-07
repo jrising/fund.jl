@@ -1,6 +1,7 @@
 # FUND scenario
+# Changed CAN so that at 1.5 + 3 it matches Sol's temperature for Iceland
 USA,10.79
-CAN,-8.03
+CAN,1.5
 WEU,9.03
 JPK,9.15
 ANZ,18.84

@@ -62,14 +62,14 @@ function timestep(s::impactedsocioeconomic, t::Int)
 
         # Calculate income growth rate
         for r in d.regions
-            v.ygrowth[t, r] = (1 + 0.01 * p.pgrowth[t - 1, r]) * (1 + 0.01 * p.ypcgrowth[t - 1, r] * p.changeypcgrowth[t - 1, r]) - 1
+            v.ygrowth[t, r] = (1 + 0.01 * p.pgrowth[t - 1, r]) * (1 + 0.01 * p.ypcgrowth[t - 1, r]) - 1
         end
 
         # Calculate income
         for r in d.regions
             oldincome = v.income[t - 1, r] # Dropped eloss
 
-            v.income[t, r] = (1 + v.ygrowth[t, r]) * oldincome - p.mitigationcost[t - 1, r]
+            v.income[t, r] = (1 + v.ygrowth[t, r]) * p.changeypcgrowth[t - 1, r] * oldincome - p.mitigationcost[t - 1, r]
         end
 
         # Check for unrealistic values
