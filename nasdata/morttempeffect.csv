@@ -1,0 +1,8 @@
+# Polynomial parameter from Hsiang et al., 2016?
+# First line: linear, quadratic, cubic
+# Lines 2-4: covariance matrix
+-3.233303,1.911123,-.1018884
+1.9678593,-.57211657,.04413228
+-.57211657,.17500949,-.01388863
+.04413228,-.01388863,.00111965
+

@@ -22,6 +22,9 @@
     d2dc = Parameter(index=[regions])
     d2dr = Parameter(index=[regions])
 
+    usabasediff = Variable()
+    morttempeffect::Vector{Float64} = Parameter()
+
     dengue = Parameter(index=[time,regions])
     schisto = Parameter(index=[time,regions])
     malaria = Parameter(index=[time,regions])
@@ -33,10 +36,13 @@
     extratropicalstormsdead = Parameter(index=[time,regions])
     population = Parameter(index=[time,regions])
     diasick = Parameter(index=[time,regions])
+
     # Other sources of death
     dead_other = Parameter(index=[time,regions])
     # Other sources of sickness
     sick_other = Parameter(index=[time,regions])
+
+    temp = Parameter(index=[time, regions])
 end
 
 function timestep(s::impactdeathmorbidity, t::Int)
@@ -44,11 +50,25 @@ function timestep(s::impactdeathmorbidity, t::Int)
     p = s.Parameters
     d = s.Dimensions
 
+    # Population in millions
+    # Dead is in individuals
+
     if t>1
         for r in d.regions
-            v.dead[t, r] = p.dengue[t, r] + p.schisto[t, r] + p.malaria[t, r] + p.cardheat[t, r] + p.cardcold[t, r] + p.resp[t, r] + p.diadead[t, r] + p.hurrdead[t, r] + p.extratropicalstormsdead[t, r] + p.dead_other[t,r]
-            if v.dead[t, r] > p.population[t, r] * 1000000.0
-                v.dead[t, r] = p.population[t, r] / 1000000.0
+            if r == 1 # USA
+                morttemp = (p.morttempeffect[1] * p.temp[t, r] + p.morttempeffect[2] * p.temp[t, r]^2 + p.morttempeffect[3] * p.temp[t, r]^3) * p.population[t, r] * 1e6 / 100000.
+                if t == 2
+                    # Calculate the difference in initial death rates
+                    original = p.dengue[t, r] + p.schisto[t, r] + p.malaria[t, r] + p.cardheat[t, r] + p.cardcold[t, r] + p.resp[t, r] + p.diadead[t, r] + p.hurrdead[t, r] + p.extratropicalstormsdead[t, r] + p.dead_other[t,r]
+                    v.usabasediff = original - morttemp
+                end
+                v.dead[t, r] = morttemp + v.usabasediff
+            else
+                v.dead[t, r] = p.dengue[t, r] + p.schisto[t, r] + p.malaria[t, r] + p.cardheat[t, r] + p.cardcold[t, r] + p.resp[t, r] + p.diadead[t, r] + p.hurrdead[t, r] + p.extratropicalstormsdead[t, r] + p.dead_other[t,r]
+            end
+
+            if v.dead[t, r] > p.population[t, r] * 1e6
+                v.dead[t, r] = p.population[t, r] * 1e6
             end
 
             v.yll[t, r] = p.d2ld[r] * p.dengue[t, r] + p.d2ls[r] * p.schisto[t, r] + p.d2lm[r] * p.malaria[t, r] + p.d2lc[r] * p.cardheat[t, r] + p.d2lc[r] * p.cardcold[t, r] + p.d2lr[r] * p.resp[t, r]
